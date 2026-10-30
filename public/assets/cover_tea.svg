@@ -1,0 +1,72 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600" width="100%" height="100%">
+  <defs>
+    <linearGradient id="teaGarden" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#19221D"/>
+      <stop offset="50%" stop-color="#2D3B32"/>
+      <stop offset="85%" stop-color="#3F5245"/>
+      <stop offset="100%" stop-color="#28352C"/>
+    </linearGradient>
+
+    <radialGradient id="teaBowl" cx="45%" cy="45%" r="55%">
+      <stop offset="0%" stop-color="#7D9977"/>
+      <stop offset="70%" stop-color="#55704E"/>
+      <stop offset="100%" stop-color="#344730"/>
+    </radialGradient>
+
+    <radialGradient id="mossHill" cx="50%" cy="30%" r="70%">
+      <stop offset="0%" stop-color="#5C7A61"/>
+      <stop offset="70%" stop-color="#36493A"/>
+      <stop offset="100%" stop-color="#1B261E"/>
+    </radialGradient>
+  </defs>
+
+  <rect width="600" height="600" fill="url(#teaGarden)"/>
+
+  <!-- Stepping Stones Path (Tobi-ishi) -->
+  <ellipse cx="280" cy="540" rx="70" ry="22" fill="#525E56"/>
+  <ellipse cx="276" cy="537" rx="66" ry="19" fill="#758279"/>
+
+  <ellipse cx="380" cy="470" rx="58" ry="18" fill="#47524A"/>
+  <ellipse cx="377" cy="467" rx="54" ry="15" fill="#6B7870"/>
+
+  <ellipse cx="290" cy="410" rx="50" ry="15" fill="#3D4740"/>
+  <ellipse cx="288" cy="408" rx="46" ry="13" fill="#5C6961"/>
+
+  <!-- Japanese Stone Lantern (Yukimi Tōrō - Snow-viewing lantern) -->
+  <!-- Top Roof with wide curved eaves -->
+  <path d="M 100 280 Q 180 230 260 280 L 250 295 Q 180 260 110 295 Z" fill="#7E8A81"/>
+  <!-- Jewel Finial (Hōju) -->
+  <circle cx="180" cy="245" r="10" fill="#919C94"/>
+
+  <!-- Light Chamber (Hibukuro) with warm candlelight -->
+  <rect x="150" y="295" width="60" height="45" rx="3" fill="#FFEAA8" opacity="0.9"/>
+  <!-- Lattice frame lines -->
+  <line x1="180" y1="295" x2="180" y2="340" stroke="#3D4740" stroke-width="4"/>
+  <line x1="150" y1="317" x2="210" y2="317" stroke="#3D4740" stroke-width="3"/>
+
+  <!-- Middle Base (Chūdai) -->
+  <polygon points="135,340 225,340 215,360 145,360" fill="#6E7A71"/>
+
+  <!-- Stone Pillar Legs (Kiso) -->
+  <path d="M 155 360 L 140 430 L 155 430 L 165 360 Z" fill="#5A665D"/>
+  <path d="M 205 360 L 220 430 L 205 430 L 195 360 Z" fill="#5A665D"/>
+
+  <!-- Ancient Moss Mound -->
+  <ellipse cx="440" cy="350" rx="130" ry="60" fill="url(#mossHill)"/>
+
+  <!-- Matcha Green Tea Bowl (Chawan) -->
+  <ellipse cx="440" cy="330" rx="60" ry="24" fill="#2E231C"/>
+  <ellipse cx="440" cy="326" rx="56" ry="20" fill="url(#teaBowl)"/>
+  <ellipse cx="440" cy="326" rx="44" ry="14" fill="#8AA882" opacity="0.85"/>
+
+  <!-- Bamboo Whisk (Chasen) Silhouette -->
+  <path d="M 525 310 L 540 270 Q 550 260 560 275 L 535 320 Z" fill="#C7B28B"/>
+
+  <!-- Gentle Steam rising in curls from the tea bowl -->
+  <path d="M 430 310 Q 420 270 435 240 T 425 190" fill="none" stroke="#D3DDD5" stroke-width="2.5" stroke-linecap="round" opacity="0.4"/>
+  <path d="M 450 305 Q 465 265 450 230 T 460 180" fill="none" stroke="#D3DDD5" stroke-width="2" stroke-linecap="round" opacity="0.3"/>
+
+  <!-- Red Hanko Seal "茶" (Tea) -->
+  <rect x="520" y="40" width="44" height="44" rx="8" fill="#C24D3D" opacity="0.9"/>
+  <text x="542" y="70" font-family="'Noto Serif JP', serif" font-size="24" font-weight="bold" fill="#FFFDF8" text-anchor="middle">茶</text>
+</svg>

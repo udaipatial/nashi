@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600" width="100%" height="100%">
+  <defs>
+    <linearGradient id="valleySky" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#1E2822"/>
+      <stop offset="50%" stop-color="#34433A"/>
+      <stop offset="85%" stop-color="#55695D"/>
+      <stop offset="100%" stop-color="#3A4D41"/>
+    </linearGradient>
+
+    <linearGradient id="riverGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#93A89C"/>
+      <stop offset="50%" stop-color="#ADC0B5"/>
+      <stop offset="100%" stop-color="#5E7568"/>
+    </linearGradient>
+
+    <filter id="valleyMist" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="16"/>
+    </filter>
+  </defs>
+
+  <rect width="600" height="600" fill="url(#valleySky)"/>
+
+  <!-- High Mountain Peaks with snow accents -->
+  <polygon points="120,400 240,160 360,400" fill="#202A24"/>
+  <polygon points="240,160 210,210 240,230 270,210" fill="#E8EFEA" opacity="0.8"/>
+
+  <polygon points="280,450 420,190 560,450" fill="#27332C"/>
+  <polygon points="420,190 390,240 420,260 450,240" fill="#E8EFEA" opacity="0.8"/>
+
+  <!-- Billowing Valley Mist Layer -->
+  <path d="M -20 340 Q 150 280 300 330 T 620 300 L 620 420 L -20 420 Z" fill="#D3DDD5" opacity="0.45" filter="url(#valleyMist)"/>
+
+  <!-- Midground Mountain Ridges in Sage & Sumi wash -->
+  <path d="M -20 420 Q 140 360 280 400 T 620 380 L 620 600 L -20 600 Z" fill="#1C241F"/>
+
+  <!-- Winding Valley River (S-Curve) -->
+  <path d="M 280 400 Q 240 430 320 470 T 260 530 Q 220 570 300 600 L 380 600 Q 300 560 340 520 T 400 460 Q 340 420 300 400 Z" fill="url(#riverGradient)"/>
+
+  <!-- Pine Trees clustering along the river bank -->
+  <g fill="#0E1410">
+    <polygon points="160,460 140,500 180,500"/>
+    <polygon points="160,490 130,540 190,540"/>
+    <polygon points="440,480 420,520 460,520"/>
+    <polygon points="440,510 410,560 470,560"/>
+    <polygon points="480,500 465,535 495,535"/>
+    <polygon points="480,530 455,575 505,575"/>
+  </g>
+
+  <!-- Red Hanko Seal "山" (Mountain) -->
+  <rect x="520" y="40" width="44" height="44" rx="8" fill="#C24D3D" opacity="0.9"/>
+  <text x="542" y="70" font-family="'Noto Serif JP', serif" font-size="24" font-weight="bold" fill="#FFFDF8" text-anchor="middle">山</text>
+</svg>

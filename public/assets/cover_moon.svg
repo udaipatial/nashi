@@ -1,0 +1,92 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600" width="100%" height="100%">
+  <defs>
+    <linearGradient id="nightSky" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#0E1217"/>
+      <stop offset="45%" stop-color="#1B222D"/>
+      <stop offset="85%" stop-color="#242F3D"/>
+      <stop offset="100%" stop-color="#131922"/>
+    </linearGradient>
+
+    <radialGradient id="moonGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#FFFDF7" stop-opacity="0.95"/>
+      <stop offset="40%" stop-color="#F2EBD9" stop-opacity="0.85"/>
+      <stop offset="70%" stop-color="#DFD3BA" stop-opacity="0.35"/>
+      <stop offset="100%" stop-color="#DFD3BA" stop-opacity="0"/>
+    </radialGradient>
+
+    <radialGradient id="moonBody" cx="45%" cy="45%" r="55%">
+      <stop offset="0%" stop-color="#FFFDF8"/>
+      <stop offset="70%" stop-color="#EBE3D0"/>
+      <stop offset="90%" stop-color="#D6CBB4"/>
+      <stop offset="100%" stop-color="#BDB096"/>
+    </radialGradient>
+
+    <linearGradient id="mountainFar" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#222B38" stop-opacity="0.8"/>
+      <stop offset="100%" stop-color="#12171F" stop-opacity="0.95"/>
+    </linearGradient>
+
+    <linearGradient id="mountainNear" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#181F28" stop-opacity="0.95"/>
+      <stop offset="100%" stop-color="#0B0D12" stop-opacity="1"/>
+    </linearGradient>
+
+    <filter id="mistBlur" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="12"/>
+    </filter>
+  </defs>
+
+  <!-- Night Sky Backdrop -->
+  <rect width="600" height="600" fill="url(#nightSky)"/>
+
+  <!-- Distant Stars / Stardust -->
+  <circle cx="80" cy="120" r="1.5" fill="#FFFDF8" opacity="0.6"/>
+  <circle cx="140" cy="70" r="1" fill="#FFFDF8" opacity="0.5"/>
+  <circle cx="210" cy="150" r="1.5" fill="#FFFDF8" opacity="0.4"/>
+  <circle cx="480" cy="90" r="1" fill="#FFFDF8" opacity="0.5"/>
+  <circle cx="520" cy="160" r="1.5" fill="#FFFDF8" opacity="0.7"/>
+  <circle cx="430" cy="220" r="1" fill="#FFFDF8" opacity="0.4"/>
+
+  <!-- Ethereal Moon Glow -->
+  <circle cx="360" cy="210" r="160" fill="url(#moonGlow)"/>
+
+  <!-- Full Moon Disc -->
+  <circle cx="360" cy="210" r="82" fill="url(#moonBody)"/>
+  <!-- Subtle Moon Mare (craters / sea) ink spots -->
+  <path d="M 330 190 Q 345 175 365 185 Q 375 200 355 210 Z" fill="#9F937C" opacity="0.22"/>
+  <path d="M 360 220 Q 380 215 395 230 Q 380 245 365 240 Z" fill="#9F937C" opacity="0.2"/>
+  <circle cx="335" cy="235" r="12" fill="#9F937C" opacity="0.15"/>
+
+  <!-- Drifting Night Mist Clouds across moon -->
+  <path d="M 180 220 Q 280 200 380 225 T 560 210 Q 590 230 520 240 T 320 235 Q 210 245 180 220 Z" fill="#2D3847" opacity="0.45" filter="url(#mistBlur)"/>
+  <path d="M 240 180 Q 330 165 420 185 T 510 175 Q 460 195 380 190 T 240 180 Z" fill="#F4EFE6" opacity="0.18" filter="url(#mistBlur)"/>
+
+  <!-- Distant Layered Mountains -->
+  <path d="M -20 460 Q 90 350 200 380 T 390 360 T 540 390 Q 580 410 620 440 L 620 600 L -20 600 Z" fill="url(#mountainFar)"/>
+  <path d="M -20 500 Q 140 420 280 450 T 470 430 T 620 480 L 620 600 L -20 600 Z" fill="url(#mountainNear)"/>
+
+  <!-- Lake Water Surface with Moon Reflection -->
+  <rect x="0" y="490" width="600" height="110" fill="#0E1217" opacity="0.95"/>
+  <ellipse cx="360" cy="530" rx="90" ry="12" fill="#F4EFE6" opacity="0.18" filter="url(#mistBlur)"/>
+  <path d="M 310 515 L 410 515 M 290 528 L 430 528 M 325 540 L 395 540 M 340 552 L 380 552" stroke="#FFFDF8" stroke-width="2" stroke-linecap="round" opacity="0.35"/>
+
+  <!-- Sumi-e Pine / Bamboo Foreground Branches -->
+  <g stroke="#090B0E" stroke-linecap="round">
+    <!-- Branch Main -->
+    <path d="M -10 180 Q 60 195 120 170 Q 170 150 220 165" fill="none" stroke-width="7"/>
+    <path d="M 120 170 Q 160 190 200 210" fill="none" stroke-width="4"/>
+    <path d="M 50 190 Q 90 230 140 240" fill="none" stroke-width="4"/>
+
+    <!-- Bamboo/Pine needles clusters -->
+    <g fill="#090B0E" stroke="none">
+      <path d="M 220 165 L 250 150 L 235 168 L 260 165 L 235 174 L 255 185 L 230 180 Z"/>
+      <path d="M 200 210 L 230 200 L 215 215 L 240 215 L 215 222 L 230 230 L 210 225 Z"/>
+      <path d="M 140 240 L 170 235 L 155 248 L 175 252 L 150 255 L 165 268 L 145 258 Z"/>
+      <path d="M 95 180 L 125 155 L 110 175 L 135 170 L 115 183 L 130 195 L 105 188 Z"/>
+    </g>
+  </g>
+
+  <!-- Red Hanko Seal "月" -->
+  <rect x="520" y="40" width="44" height="44" rx="8" fill="#C24D3D" opacity="0.9"/>
+  <text x="542" y="70" font-family="'Noto Serif JP', serif" font-size="24" font-weight="bold" fill="#FFFDF8" text-anchor="middle">月</text>
+</svg>

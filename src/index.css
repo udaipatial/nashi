@@ -1,0 +1,174 @@
+@import "tailwindcss";
+
+@theme {
+  --font-serif: "Cormorant Garamond", Georgia, serif;
+  --font-jp: "Noto Serif JP", serif;
+  --font-sans: "Plus Jakarta Sans", system-ui, sans-serif;
+  
+  --color-parchment-50: #FAF7F2;
+  --color-parchment-100: #F4EFE6;
+  --color-parchment-200: #ECE3D4;
+  --color-parchment-300: #DFD1BD;
+  --color-parchment-800: #3D362C;
+  --color-parchment-900: #231E18;
+
+  --color-ink-900: #151413;
+  --color-ink-800: #211F1D;
+  --color-ink-700: #302C28;
+  --color-ink-500: #5A544C;
+  --color-ink-400: #8A8277;
+  --color-ink-200: #C7C0B4;
+
+  --color-vermilion: #C24D3D;
+  --color-vermilion-dark: #A63829;
+  --color-vermilion-light: #E0695A;
+
+  --color-sage: #526E58;
+  --color-sage-soft: #869D8B;
+  --color-sage-light: #D3DDD5;
+}
+
+/* Hide scrollbars */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Washi Paper Textures & Glass Panels */
+.washi-panel {
+  background-color: rgba(246, 241, 233, 0.86);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(220, 210, 195, 0.7);
+}
+
+.washi-card {
+  background: linear-gradient(180deg, rgba(255, 253, 250, 0.94) 0%, rgba(243, 237, 227, 0.9) 100%);
+  border: 1px solid rgba(216, 206, 192, 0.7);
+}
+
+.dark-washi-bar {
+  background: rgba(21, 20, 19, 0.92);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.shadow-washi {
+  box-shadow: 0 8px 30px rgba(28, 24, 20, 0.08), 0 1px 3px rgba(28, 24, 20, 0.05);
+}
+
+.shadow-floating {
+  box-shadow: 0 16px 40px -10px rgba(21, 20, 19, 0.35);
+}
+
+.shadow-hanko {
+  box-shadow: 0 2px 8px rgba(194, 77, 61, 0.35);
+}
+
+/* Vertical Japanese Calligraphy */
+.vertical-calligraphy {
+  writing-mode: vertical-rl;
+  text-orientation: upright;
+  letter-spacing: 0.35em;
+}
+
+/* Mountain & Sun ambient breathing animation */
+@keyframes mountainBreath {
+  0%, 100% {
+    transform: scale(1) translateY(0);
+    filter: brightness(0.97) contrast(1.02);
+  }
+  50% {
+    transform: scale(1.03) translateY(-4px);
+    filter: brightness(1) contrast(1.04);
+  }
+}
+
+.animate-mountain-float {
+  animation: mountainBreath 18s ease-in-out infinite;
+  transform-origin: 30% 20%;
+}
+
+/* Equalizer wave bars */
+@keyframes eqBar1 {
+  0%, 100% { height: 3px; }
+  50% { height: 12px; }
+}
+@keyframes eqBar2 {
+  0%, 100% { height: 12px; }
+  50% { height: 4px; }
+}
+@keyframes eqBar3 {
+  0%, 100% { height: 6px; }
+  50% { height: 14px; }
+}
+@keyframes eqBar4 {
+  0%, 100% { height: 10px; }
+  50% { height: 5px; }
+}
+
+.eq-bar-1 { animation: eqBar1 0.85s ease-in-out infinite; }
+.eq-bar-2 { animation: eqBar2 0.7s ease-in-out infinite 0.15s; }
+.eq-bar-3 { animation: eqBar3 0.95s ease-in-out infinite 0.3s; }
+.eq-bar-4 { animation: eqBar4 0.65s ease-in-out infinite 0.2s; }
+
+.paused .eq-bar-1,
+.paused .eq-bar-2,
+.paused .eq-bar-3,
+.paused .eq-bar-4 {
+  animation-play-state: paused !important;
+  height: 3px !important;
+}
+
+/* Floating Blossom / Ink Petal Drift */
+@keyframes petalDrift {
+  0% {
+    transform: translate3d(0, -20px, 0) rotate(0deg);
+    opacity: 0;
+  }
+  15% {
+    opacity: 0.7;
+  }
+  85% {
+    opacity: 0.5;
+  }
+  100% {
+    transform: translate3d(80px, 600px, 0) rotate(240deg);
+    opacity: 0;
+  }
+}
+
+.petal {
+  position: absolute;
+  top: -20px;
+  pointer-events: none;
+  border-radius: 60% 40% 70% 30% / 50% 60% 40% 50%;
+  background: radial-gradient(circle, rgba(194, 77, 61, 0.42) 0%, rgba(224, 105, 90, 0.12) 80%);
+  animation: petalDrift 16s linear infinite;
+  z-index: 5;
+}
+
+/* Heart burst animation */
+@keyframes heartBurst {
+  0% { transform: scale(1); }
+  35% { transform: scale(1.4) rotate(-6deg); }
+  70% { transform: scale(0.9) rotate(3deg); }
+  100% { transform: scale(1) rotate(0deg); }
+}
+
+.animate-heart-pop {
+  animation: heartBurst 0.45s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes pulseGentle {
+  0%, 100% { opacity: 0.6; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.08); }
+}
+
+.animate-pulse-gentle {
+  animation: pulseGentle 4s ease-in-out infinite;
+}

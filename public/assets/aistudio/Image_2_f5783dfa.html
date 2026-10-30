@@ -1,0 +1,878 @@
+<!DOCTYPE html>
+
+<html class="h-full bg-[#171614] text-[#24211D]" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/>
+<title>Nashi (なし) - Japanese Watercolor Music Player</title>
+<!-- Tailwind CSS v3 with Plugins -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Google Fonts: Cormorant Garamond for elegant poetic serif, Plus Jakarta Sans for UI, Noto Serif JP for Kanji accents -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,400&amp;family=Noto+Serif+JP:wght@400;600;700&amp;family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind Configuration -->
+<script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            parchment: {
+              50: '#FAF7F2',
+              100: '#F4EFE6',
+              200: '#ECE3D4',
+              300: '#DFD1BD',
+              800: '#3D362C',
+              900: '#231E18',
+            },
+            ink: {
+              900: '#151413',
+              800: '#211F1D',
+              700: '#302C28',
+              500: '#5A544C',
+              400: '#8A8277',
+              200: '#C7C0B4',
+            },
+            vermilion: {
+              DEFAULT: '#C24D3D',
+              dark: '#A63829',
+              light: '#E0695A',
+            },
+            sage: {
+              DEFAULT: '#526E58',
+              soft: '#869D8B',
+              light: '#D3DDD5',
+            }
+          },
+          fontFamily: {
+            serif: ['"Cormorant Garamond"', 'serif'],
+            jp: ['"Noto Serif JP"', 'serif'],
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+          },
+          boxShadow: {
+            'washi': '0 8px 30px rgba(28, 24, 20, 0.08), 0 1px 3px rgba(28, 24, 20, 0.05)',
+            'floating': '0 16px 40px -10px rgba(21, 20, 19, 0.28)',
+            'hanko': '0 2px 8px rgba(194, 77, 61, 0.35)',
+          }
+        }
+      }
+    }
+  </script>
+<!-- BEGIN: Custom Styles -->
+<style data-purpose="scrollbar-and-effects">
+    /* Hide scrollbars for clean native mobile touch experience */
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+
+    /* Textured subtle paper overlay */
+    .washi-panel {
+      background-color: rgba(246, 241, 233, 0.82);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(220, 210, 195, 0.65);
+    }
+
+    .washi-card {
+      background: linear-gradient(180deg, rgba(255, 253, 250, 0.92) 0%, rgba(243, 237, 227, 0.88) 100%);
+      border: 1px solid rgba(216, 206, 192, 0.65);
+    }
+
+    .dark-washi-bar {
+      background: rgba(21, 20, 19, 0.88);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    /* Mountain & Sun ambient breathing animation */
+    @keyframes mountainBreath {
+      0%, 100% {
+        transform: scale(1) translateY(0);
+        filter: brightness(0.96) contrast(1.02);
+      }
+      50% {
+        transform: scale(1.035) translateY(-4px);
+        filter: brightness(1) contrast(1.05);
+      }
+    }
+
+    .animate-mountain-float {
+      animation: mountainBreath 18s ease-in-out infinite;
+      transform-origin: 30% 20%;
+    }
+
+    /* Equalizer wave bars */
+    @keyframes eqBar1 {
+      0%, 100% { height: 3px; }
+      50% { height: 11px; }
+    }
+    @keyframes eqBar2 {
+      0%, 100% { height: 11px; }
+      50% { height: 4px; }
+    }
+    @keyframes eqBar3 {
+      0%, 100% { height: 6px; }
+      50% { height: 13px; }
+    }
+    @keyframes eqBar4 {
+      0%, 100% { height: 10px; }
+      50% { height: 5px; }
+    }
+
+    .eq-bar-1 { animation: eqBar1 0.85s ease-in-out infinite; }
+    .eq-bar-2 { animation: eqBar2 0.7s ease-in-out infinite 0.15s; }
+    .eq-bar-3 { animation: eqBar3 0.95s ease-in-out infinite 0.3s; }
+    .eq-bar-4 { animation: eqBar4 0.65s ease-in-out infinite 0.2s; }
+
+    .paused .eq-bar-1,
+    .paused .eq-bar-2,
+    .paused .eq-bar-3,
+    .paused .eq-bar-4 {
+      animation-play-state: paused !important;
+      height: 3px !important;
+    }
+
+    /* Staggered Entrance Animations */
+    @keyframes fadeInUp {
+      0% {
+        opacity: 0;
+        transform: translateY(14px);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .entrance-item {
+      opacity: 0;
+      animation: fadeInUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    .delay-100 { animation-delay: 0.1s; }
+    .delay-200 { animation-delay: 0.2s; }
+    .delay-300 { animation-delay: 0.32s; }
+    .delay-400 { animation-delay: 0.44s; }
+    .delay-500 { animation-delay: 0.56s; }
+
+    /* Heart Burst Animation */
+    @keyframes heartBurst {
+      0% { transform: scale(1); }
+      35% { transform: scale(1.4) rotate(-6deg); }
+      70% { transform: scale(0.9) rotate(3deg); }
+      100% { transform: scale(1) rotate(0deg); }
+    }
+
+    .animate-heart-pop {
+      animation: heartBurst 0.45s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    /* Floating Blossom / Ink Petal Drift */
+    @keyframes petalDrift {
+      0% {
+        transform: translate3d(0, -20px, 0) rotate(0deg);
+        opacity: 0;
+      }
+      15% {
+        opacity: 0.65;
+      }
+      85% {
+        opacity: 0.45;
+      }
+      100% {
+        transform: translate3d(60px, 480px, 0) rotate(220deg);
+        opacity: 0;
+      }
+    }
+
+    .petal {
+      position: absolute;
+      top: -20px;
+      pointer-events: none;
+      border-radius: 60% 40% 70% 30% / 50% 60% 40% 50%;
+      background: radial-gradient(circle, rgba(194, 77, 61, 0.38) 0%, rgba(224, 105, 90, 0.12) 80%);
+      animation: petalDrift 14s linear infinite;
+      z-index: 5;
+    }
+
+    /* Accessibility: Respect Reduced Motion */
+    @media (prefers-reduced-motion: reduce) {
+      .animate-mountain-float,
+      .eq-bar-1, .eq-bar-2, .eq-bar-3, .eq-bar-4,
+      .entrance-item,
+      .petal,
+      .animate-heart-pop {
+        animation: none !important;
+        opacity: 1 !important;
+        transform: none !important;
+      }
+    }
+  </style>
+<!-- END: Custom Styles -->
+</head>
+<body class="h-full font-sans antialiased select-none overflow-hidden flex justify-center bg-[#0D0C0B]">
+<!-- Mobile Screen Shell (iOS viewport proportion) -->
+<div class="relative w-full max-w-[440px] h-full flex flex-col overflow-hidden bg-[#FAF6F0] shadow-2xl" id="appShell">
+<!-- Floating Ambient Petals Container -->
+<div aria-hidden="true" class="absolute inset-0 pointer-events-none overflow-hidden z-[8]" id="ambientCanvas">
+<div class="petal w-2.5 h-3.5 left-[12%]" style="animation-duration: 16s; animation-delay: 0s;"></div>
+<div class="petal w-3 h-2 left-[48%]" style="animation-duration: 21s; animation-delay: 5s;"></div>
+<div class="petal w-2 h-2.5 left-[82%]" style="animation-duration: 18s; animation-delay: 9s;"></div>
+</div>
+<!-- BEGIN: Mountain Landscape Visual Header & Background -->
+<div class="absolute inset-0 z-0 pointer-events-none overflow-hidden" data-purpose="scenery-background">
+<!-- Watercolor Mt Fuji & Misty Landscape with breathing float animation -->
+<img alt="Japanese Watercolor Landscape with Mount Fuji" class="w-full h-[360px] object-cover object-top animate-mountain-float will-change-transform" src="https://lh3.googleusercontent.com/aida/AEtjO1X4cksz_RhkPv-beKhqgcNKFM7iEOQTWVMOAPGo3PJiffyiYr1ctHZG8baWO3A3OEpX7tClENnH4L0_TyEGp7ndeimH7R2WEMdMbBZjfg8BRDaFEzgLl6yWAjrzKumtcdu_rDuyN5A-EfpvqivmBdUxYyI9OYPL-YI4UqXgJeKameeUHzmRgTkSmTYkTF67CUDkHo0s697adGmL4CFIZauq0H0aNmg_DmufTHW8Znp3yH0lNwx9FWzn9kkH"/>
+<!-- Gradient Wash to blend mountain painting seamlessly into paper parchment body -->
+<div class="absolute top-0 inset-x-0 h-[360px] bg-gradient-to-b from-[#FAF7F2]/20 via-transparent to-[#FAF6F0]"></div>
+<div class="absolute top-[280px] inset-x-0 bottom-0 bg-[#FAF6F0]"></div>
+</div>
+<!-- END: Mountain Landscape Visual Header & Background -->
+<!-- BEGIN: iOS Status Bar Simulation -->
+<header class="relative z-20 pt-2 px-6 flex justify-between items-center text-ink-900 font-semibold text-xs tracking-tight" data-purpose="status-bar">
+<span>9:41</span>
+<div class="flex items-center space-x-1.5">
+<svg class="w-3.5 h-3.5 fill-current" viewbox="0 0 24 24"><path d="M12 3c-4.97 0-9 4.03-9 9 0 2.12.74 4.07 1.97 5.61L4.35 18.25c-.39.39-.39 1.02 0 1.41.39.39 1.02.39 1.41 0l.64-.64C7.93 20.26 9.88 21 12 21s4.07-.74 5.61-1.97l.64.64c.39.39 1.02.39 1.41 0 .39-.39.39-1.02 0-1.41l-.62-.64C20.26 16.07 21 14.12 21 12c0-4.97-4.03-9-9-9z"></path></svg>
+<svg class="w-3.5 h-3.5 fill-current" viewbox="0 0 24 24"><path d="M2 17h20v2H2v-2zm1.15-4.05L4 11.97c3.9-3.91 10.2-3.91 14.1 0l.85.98-1.42 1.41-.85-.98c-3.12-3.13-8.21-3.13-11.33 0l-.85.98-1.42-1.41zM6.8 9.5l.85-.98c2.34-2.34 6.14-2.34 8.49 0l.85.98-1.42 1.41-.85-.98c-1.56-1.56-4.1-1.56-5.66 0l-.85.98L6.8 9.5z"></path></svg>
+<!-- iOS Battery Icon -->
+<div class="w-5 h-2.5 rounded-sm border border-ink-900 p-0.5 flex items-center">
+<div class="h-full w-full bg-ink-900 rounded-[1px]"></div>
+</div>
+</div>
+</header>
+<!-- END: iOS Status Bar Simulation -->
+<!-- BEGIN: App Navigation Header -->
+<nav class="relative z-20 px-5 pt-3 pb-2 flex items-center justify-between entrance-item" data-purpose="app-header">
+<!-- Brand Logo & Japanese Kanji Stamp Badge -->
+<div class="flex items-center space-x-2.5">
+<div class="w-9 h-9 rounded-xl bg-ink-900 text-[#FAF6F0] flex items-center justify-center shadow-md relative overflow-hidden transition-transform duration-300 active:scale-95 cursor-pointer">
+<!-- Fluid Wave Emblem -->
+<svg class="w-5 h-5 text-parchment-200 stroke-current" fill="none" stroke-width="1.8" viewbox="0 0 24 24">
+<path d="M3 9c2.5-3 5.5-3 8 0s5.5 3 10 0M3 15c2.5-3 5.5-3 8 0s5.5 3 10 0" stroke-linecap="round"></path>
+</svg>
+</div>
+<div>
+<div class="flex items-center space-x-1.5">
+<span class="font-serif text-2xl font-bold tracking-tight text-ink-900 leading-none">Nashi</span>
+<!-- Red Hanko Seal Badge for '波' (Wave/Flow) -->
+<span class="w-4 h-4 rounded bg-vermilion text-[10px] text-white font-jp flex items-center justify-center font-bold shadow-hanko transition-transform duration-300 hover:rotate-6">
+              波
+            </span>
+</div>
+<span class="font-jp text-[10px] text-ink-500 tracking-wider">なし • 和モダン音響</span>
+</div>
+</div>
+<!-- Header Actions: Search, Notifications, User Avatar -->
+<div class="flex items-center space-x-2">
+<button aria-label="Search" class="w-8 h-8 rounded-full bg-white/70 backdrop-blur-md border border-parchment-300 flex items-center justify-center text-ink-700 shadow-sm active:scale-90 hover:bg-white transition-all duration-200">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24">
+<path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</button>
+<button aria-label="Notifications" class="w-8 h-8 rounded-full bg-white/70 backdrop-blur-md border border-parchment-300 flex items-center justify-center text-ink-700 shadow-sm relative active:scale-90 hover:bg-white transition-all duration-200" id="notificationBtn">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24">
+<path d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+<span class="absolute top-1 right-1 w-2 h-2 rounded-full bg-vermilion transition-transform duration-300 group-hover:scale-125"></span>
+</button>
+<!-- Arjun Profile Avatar -->
+<div class="relative pl-1 cursor-pointer transition-transform duration-200 active:scale-95">
+<div class="w-8 h-8 rounded-full ring-2 ring-vermilion/30 overflow-hidden bg-ink-800 flex items-center justify-center text-xs font-serif font-bold text-parchment-100 shadow-sm">
+<span>AJ</span>
+</div>
+<span class="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-emerald-600 border-2 border-white animate-pulse"></span>
+</div>
+</div>
+</nav>
+<!-- END: App Navigation Header -->
+<!-- BEGIN: Scrollable Content Viewport -->
+<main class="relative z-10 flex-1 overflow-y-auto no-scrollbar pb-36 px-4" data-purpose="main-scroll-content">
+<!-- BEGIN: Personalized Welcome Greeting -->
+<section class="pt-4 pb-3 entrance-item delay-100" data-purpose="hero-greeting">
+<div class="washi-panel rounded-2xl p-4 shadow-washi transition-all duration-300 hover:shadow-lg">
+<div class="flex items-start justify-between">
+<div>
+<p class="font-jp text-[11px] text-vermilion tracking-widest uppercase font-semibold">夕暮れの調べ • Calm Flow</p>
+<h1 class="font-serif text-2xl font-bold text-ink-900 tracking-tight mt-0.5 leading-snug">
+                Good Evening, Arjun
+              </h1>
+<p class="text-xs text-ink-500 mt-0.5 font-normal">Music for a calmer, brighter you.</p>
+</div>
+<!-- Vintage Red Hanko Seal "調" (Tune / Harmony) -->
+<div class="border border-vermilion rounded p-1 text-vermilion bg-vermilion/5 font-jp text-[10px] font-bold tracking-tighter leading-none shadow-sm transition-transform duration-300 hover:rotate-3 cursor-pointer">
+              調和<br/>和音
+            </div>
+</div>
+<!-- Quick Daily Zen Quote Pill -->
+<div class="mt-3 pt-2.5 border-t border-parchment-300/80 flex items-center justify-between text-[11px] text-ink-700">
+<span class="italic font-serif">"Like water flowing across river stones, undisturbed."</span>
+<span class="text-sage font-medium text-[10px] bg-sage/10 px-2 py-0.5 rounded-full transition-colors duration-200 hover:bg-sage/20 cursor-default">Quiet Time</span>
+</div>
+</div>
+</section>
+<!-- END: Personalized Welcome Greeting -->
+<!-- BEGIN: Category Filter Chips -->
+<section class="py-2 entrance-item delay-200" data-purpose="category-filters">
+<div class="flex items-center space-x-2 overflow-x-auto no-scrollbar -mx-4 px-4" id="categoryChips">
+<button class="chip-btn px-3.5 py-1.5 rounded-full bg-ink-900 text-[#FAF6F0] text-xs font-medium whitespace-nowrap shadow-sm active:scale-95 transition-all duration-200" data-category="all">
+            All Sounds
+          </button>
+<button class="chip-btn px-3.5 py-1.5 rounded-full bg-white/80 border border-parchment-300 text-ink-700 text-xs font-medium whitespace-nowrap backdrop-blur-sm active:scale-95 hover:border-ink-500 transition-all duration-200" data-category="chill">
+            Japanese Chill 🍵
+          </button>
+<button class="chip-btn px-3.5 py-1.5 rounded-full bg-white/80 border border-parchment-300 text-ink-700 text-xs font-medium whitespace-nowrap backdrop-blur-sm active:scale-95 hover:border-ink-500 transition-all duration-200" data-category="lofi">
+            Lo-fi &amp; Focus 🌧️
+          </button>
+<button class="chip-btn px-3.5 py-1.5 rounded-full bg-white/80 border border-parchment-300 text-ink-700 text-xs font-medium whitespace-nowrap backdrop-blur-sm active:scale-95 hover:border-ink-500 transition-all duration-200" data-category="recent">
+            Recently Added
+          </button>
+<button class="chip-btn px-3.5 py-1.5 rounded-full bg-white/80 border border-parchment-300 text-ink-700 text-xs font-medium whitespace-nowrap backdrop-blur-sm active:scale-95 hover:border-ink-500 transition-all duration-200" data-category="zen">
+            Zen Playlists
+          </button>
+</div>
+</section>
+<!-- END: Category Filter Chips -->
+<!-- BEGIN: Section - Featured for You -->
+<section class="pt-4 pb-2 entrance-item delay-300" data-purpose="featured-section">
+<div class="flex items-center justify-between mb-2.5">
+<div class="flex items-baseline space-x-2">
+<h2 class="font-serif text-lg font-bold text-ink-900 tracking-tight">Featured for You</h2>
+<span class="font-jp text-[11px] text-ink-400">厳選楽曲</span>
+</div>
+<div class="flex space-x-1">
+<button aria-label="Previous" class="w-6 h-6 rounded-full bg-white/80 border border-parchment-300 flex items-center justify-center text-ink-700 text-xs shadow-xs active:scale-90 hover:bg-white hover:border-ink-700 transition-all duration-150" id="carouselPrev">‹</button>
+<button aria-label="Next" class="w-6 h-6 rounded-full bg-white/80 border border-parchment-300 flex items-center justify-center text-ink-700 text-xs shadow-xs active:scale-90 hover:bg-white hover:border-ink-700 transition-all duration-150" id="carouselNext">›</button>
+</div>
+</div>
+<!-- Featured Scrollable Carousel -->
+<div class="flex space-x-3.5 overflow-x-auto no-scrollbar -mx-4 px-4 pb-2 scroll-smooth" id="featuredCarousel">
+<!-- Card 1: Currently Playing Track -->
+<article class="w-[220px] flex-shrink-0 washi-card rounded-2xl overflow-hidden shadow-washi border border-parchment-300 group transition-all duration-300 hover:-translate-y-1 hover:shadow-xl cursor-pointer" onclick="handleCardPlay('Move like water, keep the fire quiet.', 'Kohäku')">
+<div class="relative h-36 bg-[#2B2724] overflow-hidden">
+<!-- Vintage Watercolor Artwork -->
+<img alt="Move like water sumi-e artwork" class="w-full h-full object-cover object-center filter saturate-[1.2] group-hover:scale-108 transition-transform duration-700 ease-out" src="https://lh3.googleusercontent.com/aida/AEtjO1X4cksz_RhkPv-beKhqgcNKFM7iEOQTWVMOAPGo3PJiffyiYr1ctHZG8baWO3A3OEpX7tClENnH4L0_TyEGp7ndeimH7R2WEMdMbBZjfg8BRDaFEzgLl6yWAjrzKumtcdu_rDuyN5A-EfpvqivmBdUxYyI9OYPL-YI4UqXgJeKameeUHzmRgTkSmTYkTF67CUDkHo0s697adGmL4CFIZauq0H0aNmg_DmufTHW8Znp3yH0lNwx9FWzn9kkH"/>
+<div class="absolute inset-0 bg-gradient-to-t from-ink-900/80 via-transparent to-transparent"></div>
+<!-- Vermilion Red Hanko Seal Stamp -->
+<span class="absolute top-2.5 right-2.5 w-6 h-6 bg-vermilion rounded flex items-center justify-center text-[10px] font-jp font-bold text-white shadow-hanko group-hover:rotate-6 transition-transform">
+                琥珀
+              </span>
+<!-- Playing Indicator Pill with Equalizer Visualizer -->
+<div class="absolute bottom-2.5 left-2.5 bg-ink-900/90 backdrop-blur-md px-2.5 py-1 rounded-full flex items-center space-x-1.5 border border-white/20 shadow-md">
+<!-- Mini Audio Equalizer Bars -->
+<div class="flex items-end space-x-0.5 h-3 w-3.5 pb-0.5" id="cardEqVisualizer">
+<span class="w-[2px] bg-vermilion rounded-full eq-bar-1"></span>
+<span class="w-[2px] bg-vermilion rounded-full eq-bar-2"></span>
+<span class="w-[2px] bg-vermilion rounded-full eq-bar-3"></span>
+<span class="w-[2px] bg-vermilion rounded-full eq-bar-4"></span>
+</div>
+<span class="text-[9px] uppercase tracking-wider text-parchment-100 font-semibold" id="cardPlayingLabel">Now Playing</span>
+</div>
+</div>
+<div class="p-3.5">
+<h3 class="font-serif text-base font-bold text-ink-900 leading-snug line-clamp-1 group-hover:text-vermilion transition-colors">Move like water, keep the fire quiet.</h3>
+<div class="flex items-center justify-between mt-1.5">
+<p class="text-xs text-ink-500 font-medium">Kohäku</p>
+<button aria-label="Play song" class="w-7 h-7 rounded-full bg-ink-900 text-parchment-100 flex items-center justify-center shadow-md group-hover:scale-110 active:scale-90 transition-all duration-200">
+<svg class="w-3.5 h-3.5 fill-current ml-0.5 card-play-icon" viewbox="0 0 24 24"><rect height="14" rx="1" width="3.5" x="6" y="5"></rect><rect height="14" rx="1" width="3.5" x="14.5" y="5"></rect></svg>
+</button>
+</div>
+</div>
+</article>
+<!-- Card 2: Same Moon, Different Nights -->
+<article class="w-[220px] flex-shrink-0 washi-card rounded-2xl overflow-hidden shadow-washi border border-parchment-300 group transition-all duration-300 hover:-translate-y-1 hover:shadow-xl cursor-pointer" onclick="handleCardPlay('Same moon, different nights.', 'Tsuki • 月')">
+<div class="relative h-36 bg-[#1A1E24] overflow-hidden">
+<div class="w-full h-full bg-gradient-to-br from-[#1E252B] via-[#2A2B33] to-[#121417] flex items-center justify-center relative group-hover:scale-105 transition-transform duration-700 ease-out">
+<!-- Moon aesthetic representation with sumi-e circle -->
+<div class="w-16 h-16 rounded-full bg-[#E5DFD3] shadow-[0_0_25px_rgba(229,223,211,0.3)] opacity-85 group-hover:opacity-100 transition-opacity"></div>
+<div class="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-transparent via-[#141517]/40 to-[#141517]"></div>
+</div>
+<!-- Hanko Stamp -->
+<span class="absolute top-2.5 right-2.5 w-6 h-6 bg-vermilion rounded flex items-center justify-center text-[10px] font-jp font-bold text-white shadow-hanko group-hover:rotate-6 transition-transform">
+                月夜
+              </span>
+</div>
+<div class="p-3.5">
+<h3 class="font-serif text-base font-bold text-ink-900 leading-snug line-clamp-1 group-hover:text-vermilion transition-colors">Same moon, different nights.</h3>
+<div class="flex items-center justify-between mt-1.5">
+<p class="text-xs text-ink-500 font-medium">Tsuki • 月</p>
+<button aria-label="Play" class="w-7 h-7 rounded-full bg-ink-900/10 text-ink-800 flex items-center justify-center group-hover:bg-ink-900 group-hover:text-parchment-100 group-hover:scale-110 active:scale-90 transition-all duration-200">
+<svg class="w-3.5 h-3.5 fill-current ml-0.5" viewbox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+</button>
+</div>
+</div>
+</article>
+<!-- Card 3: Find peace in the noise -->
+<article class="w-[220px] flex-shrink-0 washi-card rounded-2xl overflow-hidden shadow-washi border border-parchment-300 group transition-all duration-300 hover:-translate-y-1 hover:shadow-xl cursor-pointer" onclick="handleCardPlay('Find peace in the noise.', 'Yōgen • 幽玄')">
+<div class="relative h-36 bg-[#2B231D] overflow-hidden">
+<img alt="Find peace sumi-e artwork" class="w-full h-full object-cover object-bottom filter sepia-[0.3] group-hover:scale-108 transition-transform duration-700 ease-out" src="https://lh3.googleusercontent.com/aida/AEtjO1X4cksz_RhkPv-beKhqgcNKFM7iEOQTWVMOAPGo3PJiffyiYr1ctHZG8baWO3A3OEpX7tClENnH4L0_TyEGp7ndeimH7R2WEMdMbBZjfg8BRDaFEzgLl6yWAjrzKumtcdu_rDuyN5A-EfpvqivmBdUxYyI9OYPL-YI4UqXgJeKameeUHzmRgTkSmTYkTF67CUDkHo0s697adGmL4CFIZauq0H0aNmg_DmufTHW8Znp3yH0lNwx9FWzn9kkH"/>
+<span class="absolute top-2.5 right-2.5 w-6 h-6 bg-vermilion rounded flex items-center justify-center text-[10px] font-jp font-bold text-white shadow-hanko group-hover:rotate-6 transition-transform">
+                幽玄
+              </span>
+</div>
+<div class="p-3.5">
+<h3 class="font-serif text-base font-bold text-ink-900 leading-snug line-clamp-1 group-hover:text-vermilion transition-colors">Find peace in the noise.</h3>
+<div class="flex items-center justify-between mt-1.5">
+<p class="text-xs text-ink-500 font-medium">Yōgen • 幽玄</p>
+<button aria-label="Play" class="w-7 h-7 rounded-full bg-ink-900/10 text-ink-800 flex items-center justify-center group-hover:bg-ink-900 group-hover:text-parchment-100 group-hover:scale-110 active:scale-90 transition-all duration-200">
+<svg class="w-3.5 h-3.5 fill-current ml-0.5" viewbox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+</button>
+</div>
+</div>
+</article>
+</div>
+</section>
+<!-- END: Section - Featured for You -->
+<!-- BEGIN: Section - Recently Played (Adapted to mobile 2-column grid cards) -->
+<section class="pt-4 pb-2 entrance-item delay-400" data-purpose="recently-played-section">
+<div class="flex items-center justify-between mb-2.5">
+<div class="flex items-baseline space-x-2">
+<h2 class="font-serif text-lg font-bold text-ink-900 tracking-tight">Recently Played</h2>
+<span class="font-jp text-[11px] text-ink-400">再生履歴</span>
+</div>
+<button class="text-xs font-semibold text-vermilion hover:underline active:opacity-75 transition-opacity">See all</button>
+</div>
+<div class="grid grid-cols-2 gap-3">
+<!-- Item 1: Raat Ki Baat -->
+<div class="washi-card p-2.5 rounded-xl flex flex-col justify-between border border-parchment-300 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md cursor-pointer group" onclick="handleCardPlay('Raat Ki Baat', 'Arijit Singh')">
+<div class="relative w-full aspect-square rounded-lg overflow-hidden bg-ink-800 mb-2">
+<div class="w-full h-full bg-gradient-to-tr from-[#38261F] via-[#654321] to-[#D79A58] opacity-90 flex items-center justify-center group-hover:scale-105 transition-transform duration-300">
+<span class="font-jp text-xl text-parchment-100 opacity-60">夜</span>
+</div>
+<span class="absolute bottom-1 right-1.5 bg-ink-900/80 text-[10px] text-parchment-100 px-1.5 py-0.2 rounded font-mono">3:42</span>
+<button aria-label="Play Raat Ki Baat" class="absolute bottom-1.5 left-1.5 w-6 h-6 rounded-full bg-white/90 text-ink-900 flex items-center justify-center shadow group-hover:scale-110 active:scale-90 transition-transform">
+<svg class="w-3 h-3 fill-current ml-0.5" viewbox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+</button>
+</div>
+<div>
+<h4 class="text-xs font-bold text-ink-900 truncate group-hover:text-vermilion transition-colors">Raat Ki Baat</h4>
+<p class="text-[11px] text-ink-500 truncate">Arijit Singh</p>
+</div>
+</div>
+<!-- Item 2: Sajni -->
+<div class="washi-card p-2.5 rounded-xl flex flex-col justify-between border border-parchment-300 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md cursor-pointer group" onclick="handleCardPlay('Sajni', 'Arijit Singh')">
+<div class="relative w-full aspect-square rounded-lg overflow-hidden bg-ink-800 mb-2">
+<div class="w-full h-full bg-gradient-to-br from-[#1E272C] via-[#334652] to-[#7B95A2] flex items-center justify-center group-hover:scale-105 transition-transform duration-300">
+<span class="font-jp text-xl text-parchment-100 opacity-60">月</span>
+</div>
+<span class="absolute bottom-1 right-1.5 bg-ink-900/80 text-[10px] text-parchment-100 px-1.5 py-0.2 rounded font-mono">4:18</span>
+<button aria-label="Play Sajni" class="absolute bottom-1.5 left-1.5 w-6 h-6 rounded-full bg-white/90 text-ink-900 flex items-center justify-center shadow group-hover:scale-110 active:scale-90 transition-transform">
+<svg class="w-3 h-3 fill-current ml-0.5" viewbox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+</button>
+</div>
+<div>
+<h4 class="text-xs font-bold text-ink-900 truncate group-hover:text-vermilion transition-colors">Sajni</h4>
+<p class="text-[11px] text-ink-500 truncate">Arijit Singh</p>
+</div>
+</div>
+<!-- Item 3: Calm Evenings -->
+<div class="washi-card p-2.5 rounded-xl flex flex-col justify-between border border-parchment-300 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md cursor-pointer group" onclick="handleCardPlay('Calm Evenings', 'Prateek Kuhad')">
+<div class="relative w-full aspect-square rounded-lg overflow-hidden bg-ink-800 mb-2">
+<div class="w-full h-full bg-gradient-to-tr from-[#3D2C24] via-[#754E3C] to-[#E59866] flex items-center justify-center group-hover:scale-105 transition-transform duration-300">
+<span class="font-jp text-xl text-parchment-100 opacity-60">夕</span>
+</div>
+<span class="absolute bottom-1 right-1.5 bg-ink-900/80 text-[10px] text-parchment-100 px-1.5 py-0.2 rounded font-mono">3:11</span>
+<button aria-label="Play Calm Evenings" class="absolute bottom-1.5 left-1.5 w-6 h-6 rounded-full bg-white/90 text-ink-900 flex items-center justify-center shadow group-hover:scale-110 active:scale-90 transition-transform">
+<svg class="w-3 h-3 fill-current ml-0.5" viewbox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+</button>
+</div>
+<div>
+<h4 class="text-xs font-bold text-ink-900 truncate group-hover:text-vermilion transition-colors">Calm Evenings</h4>
+<p class="text-[11px] text-ink-500 truncate">Prateek Kuhad</p>
+</div>
+</div>
+<!-- Item 4: Phir Milenge -->
+<div class="washi-card p-2.5 rounded-xl flex flex-col justify-between border border-parchment-300 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md cursor-pointer group" onclick="handleCardPlay('Phir Milenge', 'Talha Anjum')">
+<div class="relative w-full aspect-square rounded-lg overflow-hidden bg-ink-800 mb-2">
+<div class="w-full h-full bg-gradient-to-br from-[#2F3931] via-[#4D5E51] to-[#A3B899] flex items-center justify-center group-hover:scale-105 transition-transform duration-300">
+<span class="font-jp text-xl text-parchment-100 opacity-60">山</span>
+</div>
+<span class="absolute bottom-1 right-1.5 bg-ink-900/80 text-[10px] text-parchment-100 px-1.5 py-0.2 rounded font-mono">5:02</span>
+<button aria-label="Play Phir Milenge" class="absolute bottom-1.5 left-1.5 w-6 h-6 rounded-full bg-white/90 text-ink-900 flex items-center justify-center shadow group-hover:scale-110 active:scale-90 transition-transform">
+<svg class="w-3 h-3 fill-current ml-0.5" viewbox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+</button>
+</div>
+<div>
+<h4 class="text-xs font-bold text-ink-900 truncate group-hover:text-vermilion transition-colors">Phir Milenge</h4>
+<p class="text-[11px] text-ink-500 truncate">Talha Anjum</p>
+</div>
+</div>
+</div>
+</section>
+<!-- END: Section - Recently Played -->
+<!-- BEGIN: Section - Made for You (Horizontal Playlist Scroll) -->
+<section class="pt-4 pb-4 entrance-item delay-500" data-purpose="made-for-you-section">
+<div class="flex items-center justify-between mb-2.5">
+<div class="flex items-baseline space-x-2">
+<h2 class="font-serif text-lg font-bold text-ink-900 tracking-tight">Made for You</h2>
+<span class="font-jp text-[11px] text-ink-400">あなたへ</span>
+</div>
+<button class="text-xs font-semibold text-vermilion hover:underline active:opacity-75 transition-opacity">See all</button>
+</div>
+<div class="flex space-x-3 overflow-x-auto no-scrollbar -mx-4 px-4 pb-2">
+<!-- Playlist 1: Midnight Drive -->
+<div class="w-32 flex-shrink-0 cursor-pointer group">
+<div class="w-32 h-32 rounded-xl bg-ink-900 overflow-hidden shadow-md relative border border-parchment-300 transition-transform duration-300 group-hover:scale-105">
+<div class="w-full h-full bg-gradient-to-br from-[#121316] via-[#1D222A] to-[#3A4454] flex flex-col items-center justify-center p-2 text-center group-hover:brightness-110 transition-all">
+<span class="text-2xl mb-1 group-hover:scale-110 transition-transform">🌙</span>
+<span class="text-[10px] text-parchment-200 font-jp">真夜中の道</span>
+</div>
+</div>
+<p class="mt-1.5 text-xs font-semibold text-ink-900 truncate group-hover:text-vermilion transition-colors">Midnight Drive</p>
+<p class="text-[10px] text-ink-500">Playlist • 50 songs</p>
+</div>
+<!-- Playlist 2: Monsoon Feelings -->
+<div class="w-32 flex-shrink-0 cursor-pointer group">
+<div class="w-32 h-32 rounded-xl bg-ink-900 overflow-hidden shadow-md relative border border-parchment-300 transition-transform duration-300 group-hover:scale-105">
+<div class="w-full h-full bg-gradient-to-br from-[#302B27] via-[#5C4D3C] to-[#C99C6A] flex flex-col items-center justify-center p-2 text-center group-hover:brightness-110 transition-all">
+<span class="text-2xl mb-1 group-hover:scale-110 transition-transform">🏮</span>
+<span class="text-[10px] text-parchment-200 font-jp">雨の気配</span>
+</div>
+</div>
+<p class="mt-1.5 text-xs font-semibold text-ink-900 truncate group-hover:text-vermilion transition-colors">Monsoon Feelings</p>
+<p class="text-[10px] text-ink-500">Playlist • 34 songs</p>
+</div>
+<!-- Playlist 3: Lo-fi Hindi -->
+<div class="w-32 flex-shrink-0 cursor-pointer group">
+<div class="w-32 h-32 rounded-xl bg-ink-900 overflow-hidden shadow-md relative border border-parchment-300 transition-transform duration-300 group-hover:scale-105">
+<div class="w-full h-full bg-gradient-to-br from-[#212423] via-[#35433C] to-[#607D6D] flex flex-col items-center justify-center p-2 text-center group-hover:brightness-110 transition-all">
+<span class="text-2xl mb-1 group-hover:scale-110 transition-transform">🎧</span>
+<span class="text-[10px] text-parchment-200 font-jp">静寂の音</span>
+</div>
+</div>
+<p class="mt-1.5 text-xs font-semibold text-ink-900 truncate group-hover:text-vermilion transition-colors">Lo-fi Hindi</p>
+<p class="text-[10px] text-ink-500">Playlist • 28 songs</p>
+</div>
+<!-- Playlist 4: Soulful Punjabi -->
+<div class="w-32 flex-shrink-0 cursor-pointer group">
+<div class="w-32 h-32 rounded-xl bg-ink-900 overflow-hidden shadow-md relative border border-parchment-300 transition-transform duration-300 group-hover:scale-105">
+<div class="w-full h-full bg-gradient-to-br from-[#3D1E18] via-[#853428] to-[#D96B5B] flex flex-col items-center justify-center p-2 text-center group-hover:brightness-110 transition-all">
+<span class="text-2xl mb-1 group-hover:scale-110 transition-transform">🌾</span>
+<span class="text-[10px] text-parchment-200 font-jp">情熱の詩</span>
+</div>
+</div>
+<p class="mt-1.5 text-xs font-semibold text-ink-900 truncate group-hover:text-vermilion transition-colors">Soulful Punjabi</p>
+<p class="text-[10px] text-ink-500">Playlist • 41 songs</p>
+</div>
+<!-- Playlist 5: Focus & Flow -->
+<div class="w-32 flex-shrink-0 cursor-pointer group">
+<div class="w-32 h-32 rounded-xl bg-ink-900 overflow-hidden shadow-md relative border border-parchment-300 transition-transform duration-300 group-hover:scale-105">
+<div class="w-full h-full bg-gradient-to-br from-[#222120] via-[#48423B] to-[#998F82] flex flex-col items-center justify-center p-2 text-center group-hover:brightness-110 transition-all">
+<span class="text-2xl mb-1 group-hover:scale-110 transition-transform">🎋</span>
+<span class="text-[10px] text-parchment-200 font-jp">集中と呼吸</span>
+</div>
+</div>
+<p class="mt-1.5 text-xs font-semibold text-ink-900 truncate group-hover:text-vermilion transition-colors">Focus &amp; Flow</p>
+<p class="text-[10px] text-ink-500">Playlist • 60 songs</p>
+</div>
+</div>
+</section>
+<!-- END: Section - Made for You -->
+</main>
+<!-- END: Scrollable Content Viewport -->
+<!-- BEGIN: Floating Mini-Player Bar (Mobile Adapted from desktop bottom player) -->
+<div class="absolute bottom-[68px] inset-x-3 z-30 shadow-floating transition-transform duration-300" data-purpose="floating-mini-player" id="miniPlayer">
+<div class="bg-[#1C1A18]/95 backdrop-blur-xl rounded-2xl p-2.5 border border-white/10 text-parchment-100 flex items-center justify-between shadow-2xl">
+<!-- Track Thumbnail & Information -->
+<div class="flex items-center space-x-3 overflow-hidden pr-2 flex-1 cursor-pointer">
+<div class="relative w-11 h-11 rounded-xl overflow-hidden flex-shrink-0 bg-ink-800 border border-white/10 shadow-sm group">
+<img alt="Track Artwork Thumbnail" class="w-full h-full object-cover object-center transition-transform duration-500" id="playerThumb" src="https://lh3.googleusercontent.com/aida/AEtjO1X4cksz_RhkPv-beKhqgcNKFM7iEOQTWVMOAPGo3PJiffyiYr1ctHZG8baWO3A3OEpX7tClENnH4L0_TyEGp7ndeimH7R2WEMdMbBZjfg8BRDaFEzgLl6yWAjrzKumtcdu_rDuyN5A-EfpvqivmBdUxYyI9OYPL-YI4UqXgJeKameeUHzmRgTkSmTYkTF67CUDkHo0s697adGmL4CFIZauq0H0aNmg_DmufTHW8Znp3yH0lNwx9FWzn9kkH"/>
+<span class="absolute bottom-0 right-0 w-3.5 h-3.5 bg-vermilion rounded-tl text-[8px] font-jp font-bold text-white flex items-center justify-center">
+              波
+            </span>
+</div>
+<div class="overflow-hidden">
+<h4 class="text-xs font-semibold text-parchment-50 truncate tracking-tight transition-all duration-300" id="playerTitle">
+              Move like water, keep the fire quiet.
+            </h4>
+<div class="flex items-center space-x-2 mt-0.5">
+<p class="text-[11px] text-parchment-300/70 truncate" id="playerArtist">Kohäku</p>
+<div class="flex items-center space-x-1 px-1.5 py-0.5 rounded bg-vermilion/20 border border-vermilion/30">
+<!-- Mini Player Live Audio Equalizer -->
+<div class="flex items-end space-x-[2px] h-2.5 w-2.5 pb-0.5 mr-0.5" id="miniEqVisualizer">
+<span class="w-[1.5px] bg-vermilion-light rounded-full eq-bar-1"></span>
+<span class="w-[1.5px] bg-vermilion-light rounded-full eq-bar-2"></span>
+<span class="w-[1.5px] bg-vermilion-light rounded-full eq-bar-3"></span>
+</div>
+<span class="text-[9px] text-vermilion-light font-mono font-medium" id="playbackTimer">1:24 / 4:16</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Playback Actions -->
+<div class="flex items-center space-x-2 flex-shrink-0">
+<!-- Interactive Favorite / Heart Button -->
+<button aria-label="Favorite" class="w-8 h-8 rounded-full flex items-center justify-center text-emerald-400 hover:text-emerald-300 active:scale-75 transition-all duration-200" id="favButton">
+<svg class="w-4 h-4 fill-current transition-transform duration-300" id="favIcon" viewbox="0 0 24 24">
+<path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"></path>
+</svg>
+</button>
+<!-- Play/Pause Circular Action -->
+<button aria-label="Toggle Play Pause" class="w-9 h-9 rounded-full bg-parchment-100 text-ink-900 flex items-center justify-center shadow-lg active:scale-90 hover:scale-105 transition-all duration-200" id="playPauseBtn">
+<svg class="w-4 h-4 fill-current transition-transform duration-200" id="playPauseIcon" viewbox="0 0 24 24">
+<rect height="16" rx="1" width="4" x="6" y="4"></rect>
+<rect height="16" rx="1" width="4" x="14" y="4"></rect>
+</svg>
+</button>
+<!-- Next Track Button -->
+<button aria-label="Next Track" class="w-8 h-8 rounded-full flex items-center justify-center text-parchment-300 hover:text-parchment-100 active:scale-90 transition-transform" id="nextTrackBtn">
+<svg class="w-4 h-4 fill-current" viewbox="0 0 24 24">
+<polygon points="5 4 15 12 5 20 5 4"></polygon>
+<line stroke="currentColor" stroke-linecap="round" stroke-width="2.2" x1="19" x2="19" y1="5" y2="19"></line>
+</svg>
+</button>
+</div>
+</div>
+<!-- Slim Scrubber Progress Bar at the top of the mini-player with animated progress head -->
+<div class="relative w-full px-4 -mt-1 cursor-pointer py-1" id="scrubberTrack">
+<div class="w-full h-1 bg-white/20 rounded-full overflow-hidden relative">
+<div class="h-full bg-vermilion rounded-full transition-all duration-1000 ease-linear relative" id="progressBar" style="width: 32.8%;">
+<div class="absolute right-0 top-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-white shadow-sm opacity-90"></div>
+</div>
+</div>
+</div>
+</div>
+<!-- END: Floating Mini-Player Bar -->
+<!-- BEGIN: iOS Bottom Tab Navigation Bar -->
+<footer class="relative z-40 dark-washi-bar pt-2 pb-5 px-6 flex items-center justify-between" data-purpose="bottom-tab-bar" id="tabBar">
+<!-- Tab 1: Home (Active) -->
+<button class="nav-tab flex flex-col items-center text-parchment-100 group transition-transform active:scale-90 relative" data-tab="home">
+<div class="w-8 h-7 flex items-center justify-center">
+<svg class="w-5 h-5 fill-current text-vermilion tab-icon transition-colors" viewbox="0 0 24 24">
+<path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"></path>
+</svg>
+</div>
+<span class="text-[10px] font-semibold tracking-tight text-parchment-100 tab-label">Home</span>
+<span class="w-1 h-1 rounded-full bg-vermilion mt-0.5 tab-dot transition-all"></span>
+</button>
+<!-- Tab 2: Search -->
+<button class="nav-tab flex flex-col items-center text-parchment-300/60 hover:text-parchment-100 group transition-transform active:scale-90 relative" data-tab="search">
+<div class="w-8 h-7 flex items-center justify-center">
+<svg class="w-5 h-5 stroke-current tab-icon transition-colors" fill="none" stroke-width="2" viewbox="0 0 24 24">
+<circle cx="11" cy="11" r="8"></circle>
+<line x1="21" x2="16.65" y1="21" y2="16.65"></line>
+</svg>
+</div>
+<span class="text-[10px] font-medium tracking-tight tab-label">Search</span>
+<span class="w-1 h-1 rounded-full bg-transparent mt-0.5 tab-dot transition-all"></span>
+</button>
+<!-- Tab 3: Your Library -->
+<button class="nav-tab flex flex-col items-center text-parchment-300/60 hover:text-parchment-100 group transition-transform active:scale-90 relative" data-tab="library">
+<div class="w-8 h-7 flex items-center justify-center">
+<svg class="w-5 h-5 stroke-current tab-icon transition-colors" fill="none" stroke-width="2" viewbox="0 0 24 24">
+<path d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</div>
+<span class="text-[10px] font-medium tracking-tight tab-label">Library</span>
+<span class="w-1 h-1 rounded-full bg-transparent mt-0.5 tab-dot transition-all"></span>
+</button>
+<!-- Tab 4: Liked Songs -->
+<button class="nav-tab flex flex-col items-center text-parchment-300/60 hover:text-parchment-100 group transition-transform active:scale-90 relative" data-tab="liked">
+<div class="w-8 h-7 flex items-center justify-center">
+<svg class="w-5 h-5 stroke-current tab-icon transition-colors" fill="none" stroke-width="2" viewbox="0 0 24 24">
+<path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</div>
+<span class="text-[10px] font-medium tracking-tight tab-label">Liked</span>
+<span class="w-1 h-1 rounded-full bg-transparent mt-0.5 tab-dot transition-all"></span>
+</button>
+<!-- Tab 5: Japanese Zen Wave -->
+<button class="nav-tab flex flex-col items-center text-parchment-300/60 hover:text-parchment-100 group transition-transform active:scale-90 relative" data-tab="zen">
+<div class="w-8 h-7 flex items-center justify-center font-jp font-bold text-xs text-vermilion tab-icon transition-transform">
+          和
+        </div>
+<span class="text-[10px] font-medium tracking-tight tab-label">Zen</span>
+<span class="w-1 h-1 rounded-full bg-transparent mt-0.5 tab-dot transition-all"></span>
+</button>
+</footer>
+<!-- END: iOS Bottom Tab Navigation Bar -->
+<!-- BEGIN: iOS Home Bar Indicator -->
+<div class="absolute bottom-1 inset-x-0 z-50 flex justify-center pointer-events-none" data-purpose="home-indicator">
+<div class="w-32 h-1 bg-white/40 rounded-full"></div>
+</div>
+<!-- END: iOS Home Bar Indicator -->
+</div>
+<!-- BEGIN: Interactive Client Logic -->
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    // 1. Play / Pause State Toggle
+    let isPlaying = true;
+    const playPauseBtn = document.getElementById('playPauseBtn');
+    const playPauseIcon = document.getElementById('playPauseIcon');
+    const cardEq = document.getElementById('cardEqVisualizer');
+    const miniEq = document.getElementById('miniEqVisualizer');
+    const cardLabel = document.getElementById('cardPlayingLabel');
+    const progressBar = document.getElementById('progressBar');
+    const playbackTimer = document.getElementById('playbackTimer');
+
+    let currentSeconds = 84; // 1:24
+    const totalSeconds = 256; // 4:16
+
+    function formatTime(secs) {
+      const m = Math.floor(secs / 60);
+      const s = Math.floor(secs % 60);
+      return `${m}:${s < 10 ? '0' : ''}${s}`;
+    }
+
+    function togglePlayState(targetState) {
+      if (typeof targetState === 'boolean') {
+        isPlaying = targetState;
+      } else {
+        isPlaying = !isPlaying;
+      }
+
+      if (isPlaying) {
+        // Pause icon
+        playPauseIcon.innerHTML = `
+          <rect x="6" y="4" width="4" height="16" rx="1"></rect>
+          <rect x="14" y="4" width="4" height="16" rx="1"></rect>
+        `;
+        cardEq.classList.remove('paused');
+        miniEq.classList.remove('paused');
+        if (cardLabel) cardLabel.textContent = 'Now Playing';
+      } else {
+        // Play triangle icon
+        playPauseIcon.innerHTML = `
+          <polygon points="6 4 19 12 6 20 6 4"></polygon>
+        `;
+        cardEq.classList.add('paused');
+        miniEq.classList.add('paused');
+        if (cardLabel) cardLabel.textContent = 'Paused';
+      }
+    }
+
+    playPauseBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      togglePlayState();
+    });
+
+    // 2. Continuous Live Progress Timer
+    setInterval(() => {
+      if (!isPlaying) return;
+      currentSeconds = (currentSeconds + 1) % totalSeconds;
+      const progressPercent = (currentSeconds / totalSeconds) * 100;
+      progressBar.style.width = `${progressPercent}%`;
+      playbackTimer.textContent = `${formatTime(currentSeconds)} / 4:16`;
+    }, 1000);
+
+    // Click on progress bar to scrub
+    const scrubberTrack = document.getElementById('scrubberTrack');
+    scrubberTrack.addEventListener('click', (e) => {
+      const rect = scrubberTrack.getBoundingClientRect();
+      const clickX = e.clientX - rect.left;
+      const pct = Math.max(0, Math.min(1, clickX / rect.width));
+      currentSeconds = Math.floor(pct * totalSeconds);
+      progressBar.style.width = `${pct * 100}%`;
+      playbackTimer.textContent = `${formatTime(currentSeconds)} / 4:16`;
+    });
+
+    // 3. Heart / Like Button Micro-interaction
+    const favButton = document.getElementById('favButton');
+    const favIcon = document.getElementById('favIcon');
+    let isLiked = true;
+
+    favButton.addEventListener('click', (e) => {
+      e.stopPropagation();
+      isLiked = !isLiked;
+      favIcon.classList.remove('animate-heart-pop');
+      void favIcon.offsetWidth; // Trigger reflow for re-animation
+      favIcon.classList.add('animate-heart-pop');
+
+      if (isLiked) {
+        favButton.classList.remove('text-ink-400');
+        favButton.classList.add('text-emerald-400');
+        favIcon.setAttribute('fill', 'currentColor');
+      } else {
+        favButton.classList.remove('text-emerald-400');
+        favButton.classList.add('text-ink-400');
+        favIcon.setAttribute('fill', 'none');
+        favIcon.setAttribute('stroke', 'currentColor');
+        favIcon.setAttribute('stroke-width', '2');
+      }
+    });
+
+    // 4. Interactive Category Chips
+    const chipButtons = document.querySelectorAll('.chip-btn');
+    chipButtons.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        chipButtons.forEach((c) => {
+          c.className = 'chip-btn px-3.5 py-1.5 rounded-full bg-white/80 border border-parchment-300 text-ink-700 text-xs font-medium whitespace-nowrap backdrop-blur-sm active:scale-95 hover:border-ink-500 transition-all duration-200';
+        });
+        btn.className = 'chip-btn px-3.5 py-1.5 rounded-full bg-ink-900 text-[#FAF6F0] text-xs font-medium whitespace-nowrap shadow-sm active:scale-95 transition-all duration-200';
+      });
+    });
+
+    // 5. Featured Carousel Next/Previous Controls
+    const carousel = document.getElementById('featuredCarousel');
+    const prevBtn = document.getElementById('carouselPrev');
+    const nextBtn = document.getElementById('carouselNext');
+
+    if (prevBtn && nextBtn && carousel) {
+      prevBtn.addEventListener('click', () => {
+        carousel.scrollBy({ left: -240, behavior: 'smooth' });
+      });
+      nextBtn.addEventListener('click', () => {
+        carousel.scrollBy({ left: 240, behavior: 'smooth' });
+      });
+    }
+
+    // 6. Bottom Navigation Tab Switching
+    const navTabs = document.querySelectorAll('.nav-tab');
+    navTabs.forEach((tab) => {
+      tab.addEventListener('click', () => {
+        navTabs.forEach((t) => {
+          t.className = 'nav-tab flex flex-col items-center text-parchment-300/60 hover:text-parchment-100 group transition-transform active:scale-90 relative';
+          const dot = t.querySelector('.tab-dot');
+          if (dot) dot.className = 'w-1 h-1 rounded-full bg-transparent mt-0.5 tab-dot transition-all';
+          const icon = t.querySelector('.tab-icon');
+          if (icon && t.dataset.tab !== 'zen') {
+            icon.classList.remove('text-vermilion');
+          }
+        });
+
+        tab.className = 'nav-tab flex flex-col items-center text-parchment-100 group transition-transform active:scale-90 relative';
+        const activeDot = tab.querySelector('.tab-dot');
+        if (activeDot) activeDot.className = 'w-1 h-1 rounded-full bg-vermilion mt-0.5 tab-dot transition-all animate-pulse';
+        const activeIcon = tab.querySelector('.tab-icon');
+        if (activeIcon) {
+          activeIcon.classList.add('text-vermilion');
+        }
+      });
+    });
+
+    // 7. Track Switcher helper
+    window.handleCardPlay = function(title, artist) {
+      const pTitle = document.getElementById('playerTitle');
+      const pArtist = document.getElementById('playerArtist');
+      if (pTitle) pTitle.textContent = title;
+      if (pArtist) pArtist.textContent = artist;
+      currentSeconds = 0;
+      progressBar.style.width = '0%';
+      playbackTimer.textContent = '0:00 / 4:16';
+      togglePlayState(true);
+    };
+
+    // Next track simulation
+    const nextTrackBtn = document.getElementById('nextTrackBtn');
+    const sampleTracks = [
+      { title: 'Move like water, keep the fire quiet.', artist: 'Kohäku' },
+      { title: 'Same moon, different nights.', artist: 'Tsuki • 月' },
+      { title: 'Find peace in the noise.', artist: 'Yōgen • 幽玄' },
+      { title: 'Raat Ki Baat', artist: 'Arijit Singh' },
+      { title: 'Sajni', artist: 'Arijit Singh' }
+    ];
+    let sampleIdx = 0;
+    if (nextTrackBtn) {
+      nextTrackBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        sampleIdx = (sampleIdx + 1) % sampleTracks.length;
+        window.handleCardPlay(sampleTracks[sampleIdx].title, sampleTracks[sampleIdx].artist);
+      });
+    }
+  });
+</script>
+<!-- END: Interactive Client Logic -->
+</body></html>

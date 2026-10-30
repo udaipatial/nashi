@@ -1,0 +1,6 @@
+{
+  "name": "Nashi — Japanese Watercolor Music & Acoustic Sanctuary",
+  "description": "A contemplative Japanese watercolor ambient music experience and acoustic sanctuary with sumi-e art, poetry, and meditation audio.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
